@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica ACME</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link href="assets/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Clínica ACME</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="patients.html">Pacientes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointments.html">Atendimentos</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <a href="patients.html" class="btn btn-outline-secondary mb-3">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+                <h2>Detalhes do Paciente</h2>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        Informações Pessoais
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-4">Nome:</dt>
+                            <dd class="col-sm-8" id="patientName"></dd>
+
+                            <dt class="col-sm-4">CPF:</dt>
+                            <dd class="col-sm-8" id="patientCpf"></dd>
+
+                            <dt class="col-sm-4">Nascimento:</dt>
+                            <dd class="col-sm-8" id="patientBirthDate"></dd>
+
+                            <dt class="col-sm-4">Sexo:</dt>
+                            <dd class="col-sm-8" id="patientGender"></dd>
+
+                            <dt class="col-sm-4">Status:</dt>
+                            <dd class="col-sm-8" id="patientStatus"></dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        Endereço
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-4">CEP:</dt>
+                            <dd class="col-sm-8" id="patientCep"></dd>
+
+                            <dt class="col-sm-4">Endereço:</dt>
+                            <dd class="col-sm-8" id="patientAddress"></dd>
+
+                            <dt class="col-sm-4">Bairro:</dt>
+                            <dd class="col-sm-8" id="patientDistrict"></dd>
+
+                            <dt class="col-sm-4">Cidade:</dt>
+                            <dd class="col-sm-8" id="patientCity"></dd>
+
+                            <dt class="col-sm-4">Complemento:</dt>
+                            <dd class="col-sm-8" id="patientComplement"></dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span>Atendimentos</span>
+                <button class="btn btn-light btn-sm" id="newAppointmentBtn">
+                    <i class="fas fa-plus"></i> Novo Atendimento
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="loading-spinner" id="loadingAppointments">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Descrição</th>
+                                <th>Status</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Atendimento -->
+    <div class="modal fade" id="appointmentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="appointmentModalTitle">Novo Atendimento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="appointmentForm">
+                        <input type="hidden" id="appointmentId">
+                        <input type="hidden" id="appointmentPatientId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="appointmentDateTime" class="form-label required-field">Data e Hora</label>
+                                <input type="datetime-local" class="form-control" id="appointmentDateTime" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="appointmentStatus" class="form-label required-field">Status</label>
+                                <select class="form-select" id="appointmentStatus" required>
+                                    <option value="true">Ativo</option>
+                                    <option value="false">Inativo</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="appointmentDescription" class="form-label required-field">Descrição</label>
+                                <textarea class="form-control" id="appointmentDescription" rows="5" required></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveAppointmentBtn">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mesmos scripts do index.html -->
+    <script src="assets/js/patient-detail.js" type="module"></script>
+</body>
+</html>

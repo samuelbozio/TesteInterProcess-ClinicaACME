@@ -1,0 +1,29 @@
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+}
+
+body {
+    padding-top: 56px;
+}
+
+.table-actions {
+    white-space: nowrap;
+    width: 1%;
+}
+
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.loading-spinner {
+    display: none;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.required-field::after {
+    content: " *";
+    color: red;
+}
