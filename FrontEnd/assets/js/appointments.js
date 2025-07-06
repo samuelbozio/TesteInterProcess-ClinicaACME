@@ -103,28 +103,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         appointments.forEach(appointment => {
             const patient = patients.find(p => p.patientId === appointment.patientId);
-            const patientName = patient ? patient.name : 'Paciente não encontrado';
 
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${formatDateTime(appointment.dateTime)}</td>
-                <td>${patientName}</td>
-                <td>${appointment.description.substring(0, 50)}${appointment.description.length > 50 ? '...' : ''}</td>
-                <td>
-                    <span class="badge ${appointment.isActive ? 'bg-success' : 'bg-secondary'}">
-                        ${appointment.isActive ? 'Ativo' : 'Inativo'}
-                    </span>
-                </td>
-                <td class="text-end table-actions">
-                    <button class="btn btn-sm btn-outline-primary edit-appointment" data-id="${appointment.appointmentId}">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger delete-appointment" data-id="${appointment.appointmentId}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            `;
-            appointmentsTableBody.appendChild(tr);
+            // Só cria a linha se o paciente for encontrado
+            if (patient) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+            <td>${formatDateTime(appointment.dateTime)}</td>
+            <td>${patient.name}</td>
+            <td>${appointment.description.substring(0, 50)}${appointment.description.length > 50 ? '...' : ''}</td>
+            <td>
+                <span class="badge ${appointment.isActive ? 'bg-success' : 'bg-secondary'}">
+                    ${appointment.isActive ? 'Ativo' : 'Inativo'}
+                </span>
+            </td>
+            <td class="text-end table-actions">
+                <button class="btn btn-sm btn-outline-primary edit-appointment" data-id="${appointment.appointmentId}">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger delete-appointment" data-id="${appointment.appointmentId}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+                appointmentsTableBody.appendChild(tr);
+            }
         });
 
 
@@ -167,8 +169,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function saveAppointment() {
-
-        console.log("CAIU AQUI!")
         try {
             if (!appointmentForm.checkValidity()) {
                 appointmentForm.classList.add('was-validated');
@@ -176,17 +176,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             showLoading(true);
+
+            // Dados base
             const appointmentData = {
-                appointmentId: currentAppointmentId,
                 patientId: document.getElementById('appointmentPatientSelectModal').value,
                 dateTime: document.getElementById('appointmentDateTime').value,
                 description: document.getElementById('appointmentDescription').value,
                 isActive: document.getElementById('appointmentStatus').value === 'true'
             };
 
-            console.log(currentAppointmentId)
-
             if (currentAppointmentId) {
+                // Inclui o ID apenas no update
+                appointmentData.appointmentId = currentAppointmentId;
                 await ApiService.updateAppointment(currentAppointmentId, appointmentData);
                 showToast('Atendimento atualizado com sucesso!', 'success');
             } else {
@@ -197,11 +198,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             appointmentModal.hide();
             loadAppointments();
         } catch (error) {
-            showToast('Erro ao salvar atendimento: ');
+            debugger;
+            showToast("Verifique se as informações estão corretas");
         } finally {
             showLoading(false);
         }
     }
+
 
     function showLoading(show) {
         document.getElementById('loadingAppointments').style.display = show ? 'block' : 'none';

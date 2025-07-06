@@ -65,15 +65,21 @@ namespace AcmeClinic.API.Services
 
         public async Task DeletePatientAsync(int id)
         {
-            var patient = await _patientService.GetPatientByIdAsync(id);
+            // Acesse o contexto diretamente, não através do próprio serviço
+            var patient = await _context.Patients.FindAsync(id);
+
             if (patient == null)
-                throw new Exception("Paciente não encontrado");
+                throw new KeyNotFoundException("Paciente não encontrado");
 
             if (!patient.IsActive)
-                throw new Exception("Paciente já está inativo");
+                throw new InvalidOperationException("Paciente já está inativo");
 
+            // Faça a inativação diretamente
             patient.IsActive = false;
-            await _patientService.UpdatePatientAsync(patient);
+
+
+            _context.Patients.Update(patient);
+            await _context.SaveChangesAsync();
         }
 
 

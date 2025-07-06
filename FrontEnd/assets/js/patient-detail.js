@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             appointmentModal.hide();
             loadAppointments(patientId);
         } catch (error) {
-            showToast('Erro ao salvar atendimento: ');
+            showToast('Erro ao salvar atendimento: Verifique as informaçõpes e se a data está correta');
         } finally {
             showLoading(false, 'appointments');
         }

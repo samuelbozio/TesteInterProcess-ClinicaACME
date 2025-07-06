@@ -137,8 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function savePatient() {
 
-        debugger;
-
         try {
             if (!patientForm.checkValidity()) {
                 patientForm.classList.add('was-validated');
@@ -166,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 complement: document.getElementById('complement').value
             };
 
-            console.log(currentPatientId)
 
             if (currentPatientId) {
                 patientData.patientId = parseInt(currentPatientId);
@@ -181,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadPatients();
             resetForm();
         } catch (error) {
-            showToast('Erro ao salvar paciente: ');
+            showToast('Erro ao salvar paciente: Verifique se informações estão corretas ou se este paciente já não está cadastrado');
         } finally {
             showLoading(false);
         }
@@ -191,13 +188,16 @@ document.addEventListener('DOMContentLoaded', () => {
     async function deletePatient(id) {
         if (!confirm('Tem certeza que deseja inativar este paciente?')) return;
 
+        console.log(id)
+
         try {
             showLoading(true);
             await ApiService.deletePatient(id);
             showToast('Paciente inativado com sucesso!', 'success');
             loadPatients();
         } catch (error) {
-            showToast('Erro ao inativar paciente: ' + error.message, 'danger');
+            debugger;
+            showToast('Erro ao inativar paciente: ', 'danger');
         } finally {
             showLoading(false);
         }

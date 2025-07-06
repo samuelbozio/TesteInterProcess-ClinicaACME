@@ -87,10 +87,13 @@ namespace AcmeClinic.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePatient(int id)
         {
+            var patient = await _patientService.GetPatientByIdAsync(id);
+            if (patient == null)
+                return NotFound();
+
             await _patientService.DeletePatientAsync(id);
             return NoContent();
         }
-
         [HttpGet("{id}/appointments")]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetPatientAppointments(int id)
         {

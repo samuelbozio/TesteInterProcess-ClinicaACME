@@ -28,6 +28,11 @@ export class ApiService {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(appointmentData)
         });
+
+        if (response.status === 204) {
+            return null;
+        }
+
         return this._handleResponse(response);
     }
 
@@ -93,9 +98,19 @@ export class ApiService {
 
     static async _handleResponse(response) {
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Erro na requisição');
+            // tenta pegar o texto da resposta para mostrar o erro
+            const errorText = await response.text();
+            throw new Error(errorText || 'Erro desconhecido');
         }
-        return response.json();
+
+        // Se a resposta tiver conteúdo JSON, parseia
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+            return await response.json();
+        }
+
+        // Caso não tenha JSON, retorna vazio ou outro valor
+        return null;
     }
+
 }

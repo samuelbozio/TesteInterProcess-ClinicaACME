@@ -1,5 +1,5 @@
 // Função para exibir toasts (notificações)
-export function showToast(message, type = 'success') {
+export function showToast(message, type = 'danger') {
     const toastContainer = document.getElementById('toastContainer') || createToastContainer();
     
     const toastEl = document.createElement('div');

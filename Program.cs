@@ -5,16 +5,16 @@ using System.ComponentModel.DataAnnotations;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adiciona controladores
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configura SQLite (altere o nome do arquivo se quiser)
+
 builder.Services.AddDbContext<AcmeClinicContext>(options =>
     options.UseSqlite("Data Source=acmeclinic.db"));
 
-// Registro de serviços
+
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
@@ -23,7 +23,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()    // ou .WithOrigins("http://localhost:3000") se quiser restringir
+        policy.AllowAnyOrigin()    
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -31,7 +31,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Swagger só em desenvolvimento
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
