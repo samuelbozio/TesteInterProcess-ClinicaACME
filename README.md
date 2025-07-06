@@ -43,28 +43,6 @@ Telas do Sistema
 5. Novo Cadastro / Edição de Atendimento
 ![{534896D0-B84C-4514-85EB-91EAC4E0F9FA}](https://github.com/user-attachments/assets/43d3423c-c01d-4344-9b4a-e3cbfdc1cfa7)
 
-Como Rodar o Projeto
-Clone o repositório:
-
-bash
-Copiar
-Editar
-git clone https://github.com/seuusuario/nome-do-repositorio.git
-cd nome-do-repositorio
-Restaure as dependências e execute as migrações do Entity Framework:
-
-bash
-Copiar
-Editar
-dotnet restore
-dotnet ef database update
-Execute a API:
-
-bash
-Copiar
-Editar
-dotnet run --project Backend/ClinicaACME.Api
-Abra o arquivo index.html do frontend no seu navegador ou configure um servidor local para o frontend.
 
 Estrutura do Projeto
 /Backend — Projeto ASP.NET Core com API REST e EF Core
