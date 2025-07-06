@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     async function editPatient(id) {
 
-        debugger;
+         ;
 
         console.log(id)
 
@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('Paciente inativado com sucesso!', 'success');
             loadPatients();
         } catch (error) {
-            debugger;
+             ;
             showToast('Erro ao inativar paciente: ', 'danger');
         } finally {
             showLoading(false);

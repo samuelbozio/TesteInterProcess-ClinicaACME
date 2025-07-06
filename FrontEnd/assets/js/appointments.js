@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             appointmentModal.hide();
             loadAppointments();
         } catch (error) {
-            debugger;
+             ;
             showToast("Verifique se as informações estão corretas");
         } finally {
             showLoading(false);
