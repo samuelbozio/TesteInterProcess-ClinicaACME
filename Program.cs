@@ -1,38 +1,37 @@
 using Microsoft.EntityFrameworkCore;
-using AcmeClinic.API.Data; // Adicione esta using
+using AcmeClinic.API.Data;
 using AcmeClinic.API.Services;
 using System.ComponentModel.DataAnnotations;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Adiciona controladores
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Adicione esta linha para configurar seu DbContext
+// Configura SQLite (altere o nome do arquivo se quiser)
 builder.Services.AddDbContext<AcmeClinicContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite("Data Source=acmeclinic.db"));
 
-// Registro dos serviços
+// Registro de serviços
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 // Configuração de CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()    // ou .WithOrigins("http://localhost:3000") se quiser restringir
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Swagger só em desenvolvimento
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -42,7 +41,10 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+// 🟡 Middleware de CORS deve vir depois de UseRouting e antes de UseAuthorization
 app.UseCors("AllowAll");
+
 app.UseAuthorization();
 
 app.MapControllers();

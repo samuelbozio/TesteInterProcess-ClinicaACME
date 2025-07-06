@@ -11,8 +11,23 @@ export class ApiService {
         return this._handleResponse(response);
     }
 
+    static async getAppointment(id) {
+        const response = await fetch(`${API_BASE_URL}/appointments/${id}`);
+        return this._handleResponse(response);
+    }
+
+
     static async getPatient(id) {
         const response = await fetch(`${API_BASE_URL}/patients/${id}`);
+        return this._handleResponse(response);
+    }
+
+    static async updateAppointment(id, appointmentData) {
+        const response = await fetch(`${API_BASE_URL}/appointments/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(appointmentData)
+        });
         return this._handleResponse(response);
     }
 
@@ -39,6 +54,16 @@ export class ApiService {
             method: 'DELETE'
         });
         return this._handleResponse(response);
+    }
+
+    static async deleteAppointment(id) {
+        const response = await fetch(`${API_BASE_URL}/appointments/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao deletar atendimento');
+        }
     }
 
     static async getPatientAppointments(patientId) {

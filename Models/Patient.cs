@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AcmeClinic.API.Models
 {
     public class Patient
     {
         [Key]
-        public Guid PatientId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
+        public int PatientId { get; set; }
 
         [Required(ErrorMessage = "Nome é obrigatório")]
         [StringLength(100, ErrorMessage = "Nome não pode exceder 100 caracteres")]
@@ -19,9 +21,8 @@ namespace AcmeClinic.API.Models
         public string CPF { get; set; }
 
         [Required(ErrorMessage = "Sexo é obrigatório")]
-        public string Gender { get; set; } // M, F ou Outro
+        public string Gender { get; set; } 
 
-        // Endereço
         public string? CEP { get; set; }
         public string? City { get; set; }
         public string? District { get; set; }
@@ -31,6 +32,7 @@ namespace AcmeClinic.API.Models
         [Required]
         public bool IsActive { get; set; } = true;
 
-        public ICollection<Appointment> Appointments { get; set; }
+        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+
     }
 }

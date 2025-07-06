@@ -20,7 +20,7 @@ namespace AcmeClinic.API.Controllers
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointments(
             [FromQuery] DateTime? startDate,
             [FromQuery] DateTime? endDate,
-            [FromQuery] Guid? patientId,
+            [FromQuery] int? patientId,
             [FromQuery] bool? isActive)
         {
             var appointments = await _appointmentService.GetAppointmentsAsync(
@@ -30,7 +30,7 @@ namespace AcmeClinic.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Appointment>> GetAppointment(Guid id)
+        public async Task<ActionResult<Appointment>> GetAppointment(int id)
         {
             var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
 
@@ -43,7 +43,7 @@ namespace AcmeClinic.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAppointment(Guid id, Appointment appointment)
+        public async Task<IActionResult> PutAppointment(int id, Appointment appointment)
         {
             if (id != appointment.AppointmentId)
             {
@@ -88,7 +88,7 @@ namespace AcmeClinic.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAppointment(Guid id)
+        public async Task<IActionResult> DeleteAppointment(int id)
         {
             await _appointmentService.DeleteAppointmentAsync(id);
             return NoContent();

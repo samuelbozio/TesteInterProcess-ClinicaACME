@@ -1,6 +1,6 @@
 import { ApiService } from './api.js';
 import { formatDate, formatCPF, showToast } from './app.js';
-const bootstrap = window.bootstrap || { Modal: class {} };
+const bootstrap = window.bootstrap || { Modal: class { } };
 
 document.addEventListener('DOMContentLoaded', () => {
     const patientsTableBody = document.getElementById('patientsTableBody');
@@ -15,14 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentPatientId = null;
 
-    // Carrega pacientes ao iniciar
     loadPatients();
 
-    // Event Listeners
     searchBtn.addEventListener('click', loadPatients);
     savePatientBtn.addEventListener('click', savePatient);
 
-    // Função para carregar pacientes
+
     async function loadPatients() {
         try {
             showLoading(true);
@@ -39,7 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Função para renderizar pacientes na tabela
     function renderPatients(patients) {
         patientsTableBody.innerHTML = '';
 
@@ -74,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
             patientsTableBody.appendChild(tr);
         });
 
-        // Adiciona eventos aos botões
         document.querySelectorAll('.edit-patient').forEach(btn => {
             btn.addEventListener('click', (e) => editPatient(e.target.closest('button').dataset.id));
         });
@@ -83,9 +79,12 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', (e) => deletePatient(e.target.closest('button').dataset.id));
         });
     }
-
-    // Função para editar paciente
     async function editPatient(id) {
+
+        debugger;
+
+        console.log(id)
+
         try {
             showLoading(true);
             currentPatientId = id;
@@ -112,11 +111,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Função para salvar paciente (criar/editar)
+    function isValidCPF(cpf) {
+        cpf = cpf.replace(/\D/g, '');
+
+        if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+        let sum = 0, rest;
+
+        for (let i = 1; i <= 9; i++)
+            sum += parseInt(cpf.charAt(i - 1)) * (11 - i);
+
+        rest = (sum * 10) % 11;
+        if (rest === 10 || rest === 11) rest = 0;
+        if (rest !== parseInt(cpf.charAt(9))) return false;
+
+        sum = 0;
+        for (let i = 1; i <= 10; i++)
+            sum += parseInt(cpf.charAt(i - 1)) * (12 - i);
+
+        rest = (sum * 10) % 11;
+        if (rest === 10 || rest === 11) rest = 0;
+
+        return rest === parseInt(cpf.charAt(10));
+    }
+
     async function savePatient() {
+
+        debugger;
+
         try {
             if (!patientForm.checkValidity()) {
                 patientForm.classList.add('was-validated');
+                return;
+            }
+
+            const cpfValue = document.getElementById('cpf').value.replace(/\D/g, '');
+
+            if (!isValidCPF(cpfValue)) {
+                showToast('CPF inválido. Verifique os dígitos informados.', 'danger');
                 return;
             }
 
@@ -134,7 +166,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 complement: document.getElementById('complement').value
             };
 
+            console.log(currentPatientId)
+
             if (currentPatientId) {
+                patientData.patientId = parseInt(currentPatientId);
                 await ApiService.updatePatient(currentPatientId, patientData);
                 showToast('Paciente atualizado com sucesso!', 'success');
             } else {
@@ -146,13 +181,13 @@ document.addEventListener('DOMContentLoaded', () => {
             loadPatients();
             resetForm();
         } catch (error) {
-            showToast('Erro ao salvar paciente: ' + error.message, 'danger');
+            showToast('Erro ao salvar paciente: ');
         } finally {
             showLoading(false);
         }
     }
 
-    // Função para deletar paciente
+  
     async function deletePatient(id) {
         if (!confirm('Tem certeza que deseja inativar este paciente?')) return;
 
@@ -168,7 +203,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Função para resetar o formulário
     function resetForm() {
         currentPatientId = null;
         patientForm.reset();
@@ -176,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('patientModalTitle').textContent = 'Novo Paciente';
     }
 
-    // Função para mostrar/ocultar loading
     function showLoading(show) {
         document.getElementById('loadingPatients').style.display = show ? 'block' : 'none';
     }

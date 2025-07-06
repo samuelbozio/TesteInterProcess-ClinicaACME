@@ -1,5 +1,5 @@
 import { ApiService } from './api.js';
-import { formatDateTime, showToast } from './app.js'; // Agora formatDateTime está disponível
+import { formatDateTime, showToast } from './app.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const appointmentsTableBody = document.getElementById('appointmentsTableBody');
@@ -16,27 +16,56 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentAppointmentId = null;
     let patients = [];
 
-    // Carrega pacientes para o select
     await loadPatients();
-    // Carrega atendimentos ao iniciar
     await loadAppointments();
 
-    // Event Listeners
     searchAppointmentsBtn.addEventListener('click', loadAppointments);
     resetAppointmentsBtn.addEventListener('click', resetFilters);
     saveAppointmentBtn.addEventListener('click', saveAppointment);
 
-    // Função para carregar pacientes
     async function loadPatients() {
         try {
             patients = await ApiService.getPatients(null, null, true);
-            renderPatientOptions();
+            renderPatientOptions(); // do filtro
+            renderPatientOptionsForModal(); // do modal
         } catch (error) {
             showToast('Erro ao carregar pacientes: ' + error.message, 'danger');
         }
     }
 
-    // Função para renderizar opções de pacientes
+    document.querySelectorAll('.delete-appointment').forEach(btn => {
+        btn.addEventListener('click', (e) => deleteAppointment(e.target.closest('button').dataset.id));
+    });
+
+    async function deleteAppointment(id) {
+        if (!confirm('Tem certeza que deseja inativar este atendimento?')) return;
+
+        try {
+            showLoading(true);
+            await ApiService.deleteAppointment(id);
+            showToast('Atendimento inativado com sucesso!', 'success');
+            loadAppointments();
+        } catch (error) {
+            showToast('Erro ao inativar atendimento: ' + error.message, 'danger');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+
+    function renderPatientOptionsForModal() {
+        const select = document.getElementById('appointmentPatientSelectModal');
+        select.innerHTML = '<option value="">Selecione um paciente</option>';
+
+        patients.forEach(patient => {
+            const option = document.createElement('option');
+            option.value = patient.patientId;
+            option.textContent = patient.name;
+            select.appendChild(option);
+        });
+    }
+
+
     function renderPatientOptions() {
         appointmentPatient.innerHTML = '<option value="">Todos</option>';
         patients.forEach(patient => {
@@ -47,7 +76,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Função para carregar atendimentos
     async function loadAppointments() {
         try {
             showLoading(true);
@@ -65,7 +93,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Função para renderizar atendimentos
     function renderAppointments(appointments) {
         appointmentsTableBody.innerHTML = '';
 
@@ -100,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             appointmentsTableBody.appendChild(tr);
         });
 
-        // Adiciona eventos aos botões
+
         document.querySelectorAll('.edit-appointment').forEach(btn => {
             btn.addEventListener('click', (e) => editAppointment(e.target.closest('button').dataset.id));
         });
@@ -110,7 +137,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Função para resetar filtros
+    async function editAppointment(id) {
+        try {
+            const appointment = await ApiService.getAppointment(id);
+
+            currentAppointmentId = appointment.appointmentId;
+
+            document.getElementById('appointmentId').value = appointment.id;
+            document.getElementById('appointmentDateTime').value = appointment.dateTime.slice(0, 16);
+            document.getElementById('appointmentDescription').value = appointment.description;
+            document.getElementById('appointmentStatus').value = appointment.isActive.toString();
+            document.getElementById('appointmentPatientSelectModal').value = appointment.patientId;
+
+            document.getElementById('appointmentModalTitle').textContent = 'Editar Atendimento';
+            const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
+            modal.show();
+        } catch (error) {
+            console.error(error);
+            showToast('Erro ao carregar atendimento para edição.', 'danger');
+        }
+    }
+
     function resetFilters() {
         startDate.value = '';
         endDate.value = '';
@@ -119,8 +166,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadAppointments();
     }
 
-    // Função para salvar atendimento
     async function saveAppointment() {
+
+        console.log("CAIU AQUI!")
         try {
             if (!appointmentForm.checkValidity()) {
                 appointmentForm.classList.add('was-validated');
@@ -129,11 +177,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             showLoading(true);
             const appointmentData = {
-                patientId: document.getElementById('appointmentPatientId').value,
+                appointmentId: currentAppointmentId,
+                patientId: document.getElementById('appointmentPatientSelectModal').value,
                 dateTime: document.getElementById('appointmentDateTime').value,
                 description: document.getElementById('appointmentDescription').value,
                 isActive: document.getElementById('appointmentStatus').value === 'true'
             };
+
+            console.log(currentAppointmentId)
 
             if (currentAppointmentId) {
                 await ApiService.updateAppointment(currentAppointmentId, appointmentData);
@@ -146,13 +197,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             appointmentModal.hide();
             loadAppointments();
         } catch (error) {
-            showToast('Erro ao salvar atendimento: ' + error.message, 'danger');
+            showToast('Erro ao salvar atendimento: ');
         } finally {
             showLoading(false);
         }
     }
 
-    // Função para mostrar/ocultar loading
     function showLoading(show) {
         document.getElementById('loadingAppointments').style.display = show ? 'block' : 'none';
     }

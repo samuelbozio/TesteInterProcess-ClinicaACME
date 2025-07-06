@@ -4,11 +4,11 @@ namespace AcmeClinic.API.Services
 {
     public interface IAppointmentService
     {
-        Task<IEnumerable<Appointment>> GetAppointmentsAsync(DateTime? startDate, DateTime? endDate, Guid? patientId, bool? isActive);
-        Task<Appointment> GetAppointmentByIdAsync(Guid id);
+        Task<IEnumerable<Appointment>> GetAppointmentsAsync(DateTime? startDate, DateTime? endDate, int? patientId, bool? isActive);
+        Task<Appointment> GetAppointmentByIdAsync(int id);
         Task<Appointment> CreateAppointmentAsync(Appointment appointment);
         Task UpdateAppointmentAsync(Appointment appointment);
-        Task DeleteAppointmentAsync(Guid id);
-        Task<bool> AppointmentExists(Guid id);
+        Task DeleteAppointmentAsync(int id);
+        Task<bool> AppointmentExists(int id);
     }
 }

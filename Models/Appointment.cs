@@ -1,15 +1,17 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace AcmeClinic.API.Models
 {
     public class Appointment
     {
         [Key]
-        public Guid AppointmentId { get; set; }
+        public int AppointmentId { get; set; }
 
         [Required]
-        public Guid PatientId { get; set; }
-        public Patient Patient { get; set; }
+        public int PatientId { get; set; }
+        [JsonIgnore]
+        public Patient? Patient { get; set; }
 
         [Required(ErrorMessage = "Data e hora são obrigatórias")]
         public DateTime DateTime { get; set; }

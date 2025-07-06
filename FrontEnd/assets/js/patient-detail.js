@@ -4,13 +4,12 @@ import { formatDate, formatCPF, showToast } from './app.js';
 document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const patientId = urlParams.get('id');
-    
+
     if (!patientId) {
         window.location.href = 'patients.html';
         return;
     }
 
-    // Elementos da página
     const patientName = document.getElementById('patientName');
     const patientCpf = document.getElementById('patientCpf');
     const patientBirthDate = document.getElementById('patientBirthDate');
@@ -29,11 +28,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let currentAppointmentId = null;
 
-    // Carrega os dados do paciente e seus atendimentos
     await loadPatientData(patientId);
     await loadAppointments(patientId);
 
-    // Event Listeners
     newAppointmentBtn.addEventListener('click', () => {
         currentAppointmentId = null;
         document.getElementById('appointmentModalTitle').textContent = 'Novo Atendimento';
@@ -44,7 +41,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     saveAppointmentBtn.addEventListener('click', () => saveAppointment(patientId));
 
-    // Função para carregar dados do paciente
     async function loadPatientData(id) {
         try {
             showLoading(true);
@@ -55,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             patientBirthDate.textContent = formatDate(patient.birthDate);
             patientGender.textContent = getGenderDescription(patient.gender);
             patientStatus.innerHTML = `<span class="badge ${patient.isActive ? 'bg-success' : 'bg-secondary'}">${patient.isActive ? 'Ativo' : 'Inativo'}</span>`;
-            
+
             patientCep.textContent = patient.cep || 'Não informado';
             patientAddress.textContent = patient.address || 'Não informado';
             patientDistrict.textContent = patient.district || 'Não informado';
@@ -69,7 +65,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Função para carregar atendimentos do paciente
     async function loadAppointments(patientId) {
         try {
             showLoading(true, 'appointments');
@@ -82,7 +77,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Função para renderizar atendimentos
     function renderAppointments(appointments) {
         appointmentsTableBody.innerHTML = '';
 
@@ -113,7 +107,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             appointmentsTableBody.appendChild(tr);
         });
 
-        // Adiciona eventos aos botões
         document.querySelectorAll('.edit-appointment').forEach(btn => {
             btn.addEventListener('click', (e) => editAppointment(e.target.closest('button').dataset.id));
         });
@@ -123,7 +116,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Função para salvar atendimento
     async function saveAppointment(patientId) {
         try {
             if (!appointmentForm.checkValidity()) {
@@ -133,6 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             showLoading(true, 'appointments');
             const appointmentData = {
+                appointmentId: currentAppointmentId,
                 patientId: patientId,
                 dateTime: document.getElementById('appointmentDateTime').value,
                 description: document.getElementById('appointmentDescription').value,
@@ -150,13 +143,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             appointmentModal.hide();
             loadAppointments(patientId);
         } catch (error) {
-            showToast('Erro ao salvar atendimento: ' + error.message, 'danger');
+            showToast('Erro ao salvar atendimento: ');
         } finally {
             showLoading(false, 'appointments');
         }
     }
 
-    // Função para editar atendimento
     async function editAppointment(id) {
         try {
             showLoading(true, 'appointments');
@@ -166,12 +158,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('appointmentModalTitle').textContent = 'Editar Atendimento';
             document.getElementById('appointmentId').value = appointment.appointmentId;
             document.getElementById('appointmentPatientId').value = appointment.patientId;
-            
-            // Formata a data para o input datetime-local
+
             const date = new Date(appointment.dateTime);
             const timezoneOffset = date.getTimezoneOffset() * 60000;
             const localISOTime = new Date(date - timezoneOffset).toISOString().slice(0, 16);
-            
+
             document.getElementById('appointmentDateTime').value = localISOTime;
             document.getElementById('appointmentDescription').value = appointment.description;
             document.getElementById('appointmentStatus').value = appointment.isActive.toString();
@@ -184,7 +175,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Função para deletar atendimento
     async function deleteAppointment(id) {
         if (!confirm('Tem certeza que deseja inativar este atendimento?')) return;
 
@@ -200,7 +190,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Funções auxiliares
     function getGenderDescription(gender) {
         switch (gender) {
             case 'M': return 'Masculino';

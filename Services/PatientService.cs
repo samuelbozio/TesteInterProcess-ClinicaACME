@@ -7,6 +7,7 @@ namespace AcmeClinic.API.Services
     public class PatientService : IPatientService
     {
         private readonly AcmeClinicContext _context;
+        private readonly IPatientService _patientService;
 
         public PatientService(AcmeClinicContext context)
         {
@@ -29,7 +30,7 @@ namespace AcmeClinic.API.Services
             return await query.ToListAsync();
         }
 
-        public async Task<Patient> GetPatientByIdAsync(Guid id)
+        public async Task<Patient?> GetPatientByIdAsync(int id)
         {
             return await _context.Patients.FindAsync(id);
         }
@@ -43,26 +44,46 @@ namespace AcmeClinic.API.Services
 
         public async Task UpdatePatientAsync(Patient patient)
         {
-            _context.Entry(patient).State = EntityState.Modified;
+            var existing = await _context.Patients.FindAsync(patient.PatientId);
+            if (existing == null)
+                throw new InvalidOperationException("Paciente não encontrado");
+
+            // Mapeia manualmente os campos permitidos
+            existing.Name = patient.Name;
+            existing.BirthDate = patient.BirthDate;
+            existing.CPF = patient.CPF;
+            existing.Gender = patient.Gender;
+            existing.CEP = patient.CEP;
+            existing.City = patient.City;
+            existing.District = patient.District;
+            existing.Address = patient.Address;
+            existing.Complement = patient.Complement;
+            existing.IsActive = patient.IsActive;
+
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeletePatientAsync(Guid id)
+        public async Task DeletePatientAsync(int id)
         {
-            var patient = await _context.Patients.FindAsync(id);
-            if (patient != null)
-            {
-                patient.IsActive = false;
-                await UpdatePatientAsync(patient);
-            }
+            var patient = await _patientService.GetPatientByIdAsync(id);
+            if (patient == null)
+                throw new Exception("Paciente não encontrado");
+
+            if (!patient.IsActive)
+                throw new Exception("Paciente já está inativo");
+
+            patient.IsActive = false;
+            await _patientService.UpdatePatientAsync(patient);
         }
 
-        public async Task<bool> PatientExists(Guid id)
+
+
+        public async Task<bool> PatientExists(int id)
         {
-            return await _context.Patients.AnyAsync(e => e.PatientId == id);
+            return await _context.Patients.AnyAsync(p => p.PatientId == id);
         }
 
-        public async Task<bool> CpfExists(string cpf, Guid? id = null)
+        public async Task<bool> CpfExists(string cpf, int? id = null)
         {
             if (id.HasValue)
                 return await _context.Patients.AnyAsync(p => p.CPF == cpf && p.PatientId != id.Value);
@@ -70,13 +91,11 @@ namespace AcmeClinic.API.Services
             return await _context.Patients.AnyAsync(p => p.CPF == cpf);
         }
 
-        public async Task<IEnumerable<Appointment>> GetPatientAppointmentsAsync(Guid patientId)
+        public async Task<IEnumerable<Appointment>> GetPatientAppointmentsAsync(int patientId)
         {
             return await _context.Appointments
                 .Where(a => a.PatientId == patientId && a.IsActive)
                 .ToListAsync();
         }
     }
-
-
 }

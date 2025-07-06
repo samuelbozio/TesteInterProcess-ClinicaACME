@@ -27,7 +27,7 @@ namespace AcmeClinic.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Patient>> GetPatient(Guid id)
+        public async Task<ActionResult<Patient>> GetPatient(int id)
         {
             var patient = await _patientService.GetPatientByIdAsync(id);
 
@@ -40,7 +40,7 @@ namespace AcmeClinic.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPatient(Guid id, Patient patient)
+        public async Task<IActionResult> PutPatient(int id, Patient patient)
         {
             if (id != patient.PatientId)
             {
@@ -85,14 +85,14 @@ namespace AcmeClinic.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePatient(Guid id)
+        public async Task<IActionResult> DeletePatient(int id)
         {
             await _patientService.DeletePatientAsync(id);
             return NoContent();
         }
 
         [HttpGet("{id}/appointments")]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetPatientAppointments(Guid id)
+        public async Task<ActionResult<IEnumerable<Appointment>>> GetPatientAppointments(int id)
         {
             var patient = await _patientService.GetPatientByIdAsync(id);
             if (patient == null)

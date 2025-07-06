@@ -16,9 +16,9 @@ namespace AcmeClinic.API.Services
         }
 
         public async Task<IEnumerable<Appointment>> GetAppointmentsAsync(
-            DateTime? startDate, 
-            DateTime? endDate, 
-            Guid? patientId, 
+            DateTime? startDate,
+            DateTime? endDate,
+            int? patientId,
             bool? isActive)
         {
             var query = _context.Appointments
@@ -40,7 +40,7 @@ namespace AcmeClinic.API.Services
             return await query.ToListAsync();
         }
 
-        public async Task<Appointment> GetAppointmentByIdAsync(Guid id)
+        public async Task<Appointment> GetAppointmentByIdAsync(int id)
         {
             return await _context.Appointments
                 .Include(a => a.Patient)
@@ -69,7 +69,7 @@ namespace AcmeClinic.API.Services
 
         public async Task UpdateAppointmentAsync(Appointment appointment)
         {
-            // Validações similares ao create
+
             if (appointment.DateTime > DateTime.Now)
             {
                 throw new Exception("Não é possível agendar atendimentos com data futura");
@@ -79,7 +79,7 @@ namespace AcmeClinic.API.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAppointmentAsync(Guid id)
+        public async Task DeleteAppointmentAsync(int id)
         {
             var appointment = await _context.Appointments.FindAsync(id);
             if (appointment != null)
@@ -89,7 +89,7 @@ namespace AcmeClinic.API.Services
             }
         }
 
-        public async Task<bool> AppointmentExists(Guid id)
+        public async Task<bool> AppointmentExists(int id)
         {
             return await _context.Appointments.AnyAsync(e => e.AppointmentId == id);
         }
