@@ -95,14 +95,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                         ${appointment.isActive ? 'Ativo' : 'Inativo'}
                     </span>
                 </td>
-                <td class="text-end table-actions">
-                    <button class="btn btn-sm btn-outline-primary edit-appointment" data-id="${appointment.appointmentId}">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger delete-appointment" data-id="${appointment.appointmentId}">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
             `;
             appointmentsTableBody.appendChild(tr);
         });
