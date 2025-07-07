@@ -3,7 +3,7 @@ Sistema web para gerenciamento de pacientes e atendimentos, desenvolvido com bac
 
 Tecnologias Utilizadas
 Backend
-.NET 6 / ASP.NET Core Web API
+.NET 8 / ASP.NET Core Web API
 
 Entity Framework Core com SQLite (banco de dados embutido)
 
